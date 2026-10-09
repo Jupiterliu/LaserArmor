@@ -1,0 +1,222 @@
+{
+  "runtime": {
+    "device": "auto"
+  },
+  "datasets": {
+    "bdd100k": "data/prepared/bdd100k",
+    "kitti": "data/prepared/kitti",
+    "nuscenes": "data/prepared/nuscenes",
+    "udacity": "data/prepared/udacity",
+    "waymo": "data/prepared/waymo"
+  },
+  "methods": {
+    "detectors": {
+      "LaserGuard": {
+        "parameters": {
+          "input_size": 224,
+          "resize_short_side": 256,
+          "spot_use_standardized_view": false,
+          "spot_autocontrast": true,
+          "spot_grayscale_threshold": 140,
+          "spot_gaussian_kernel": 11,
+          "spot_dilate_iterations": 3,
+          "spot_component_max_area": 200,
+          "spot_count_threshold": 11,
+          "beam_solarize_threshold": 250,
+          "beam_sharpness_factor": 1000.0,
+          "beam_color_filter_threshold": 84,
+          "beam_median_kernel": 7,
+          "beam_mask_area_threshold": 2894,
+          "beam_feature_mode": "authors_ratio",
+          "beam_mean_ratio_threshold": 1.24,
+          "beam_std_ratio_threshold": 3.94,
+          "beam_mean_difference_threshold": 0.0,
+          "beam_std_difference_threshold": 0.0
+        }
+      },
+      "BlindedByBeam": {
+        "by_dataset": {
+          "bdd100k": {
+            "artifact": "weights/detection/BlindedByBeam/bdd100k.joblib"
+          },
+          "kitti": {
+            "artifact": "weights/detection/BlindedByBeam/kitti.joblib"
+          },
+          "nuscenes": {
+            "artifact": "weights/detection/BlindedByBeam/nuscenes.joblib"
+          },
+          "udacity": {
+            "artifact": "weights/detection/BlindedByBeam/udacity.joblib"
+          },
+          "waymo": {
+            "artifact": "weights/detection/BlindedByBeam/waymo.joblib"
+          }
+        }
+      },
+      "StripeDet": {
+        "parameters": {
+          "sample_columns": 1,
+          "confirm_frames": 1,
+          "minimum_stripe_height": 60,
+          "stripe_metric_mode": "channel_selective"
+        },
+        "by_dataset": {
+          "bdd100k": {
+            "checkpoint": "weights/detection/StripeDet/bdd100k.pth"
+          },
+          "kitti": {
+            "checkpoint": "weights/detection/StripeDet/kitti.pth"
+          },
+          "nuscenes": {
+            "checkpoint": "weights/detection/StripeDet/nuscenes.pth"
+          },
+          "udacity": {
+            "checkpoint": "weights/detection/StripeDet/udacity.pth"
+          },
+          "waymo": {
+            "checkpoint": "weights/detection/StripeDet/waymo.pth"
+          }
+        }
+      }
+    },
+    "restorers": {
+      "ADOM": {},
+      "Restormer": {
+        "checkpoint": "weights/restoration/Restormer.pth",
+        "amp": false
+      },
+      "Uformer": {
+        "checkpoint": "weights/restoration/Uformer.pth",
+        "amp": false,
+        "parameters": {
+          "img_size": 128,
+          "embed_dim": 32,
+          "win_size": 8,
+          "token_projection": "linear",
+          "token_mlp": "leff",
+          "depths": [1, 2, 8, 8, 2, 8, 8, 2, 1],
+          "modulator": true,
+          "dd_in": 3
+        }
+      },
+      "NAFNet": {
+        "checkpoint": "weights/restoration/NAFNet.pth",
+        "amp": false,
+        "parameters": {
+          "img_channel": 3,
+          "width": 64,
+          "middle_blk_num": 12,
+          "enc_blk_nums": [2, 2, 4, 8],
+          "dec_blk_nums": [2, 2, 2, 2]
+        }
+      },
+      "AnyIR": {
+        "checkpoint": "weights/restoration/AnyIR.pth",
+        "amp": false,
+        "parameters": {
+          "inp_channels": 3,
+          "out_channels": 3,
+          "dim": 28,
+          "num_blocks": [3, 5, 5, 7],
+          "num_refinement_blocks": 4,
+          "heads": [1, 2, 4, 8],
+          "ffn_expansion_factor": 2.0,
+          "bias": false,
+          "LayerNorm_type": "WithBias"
+        }
+      },
+      "TSFormer": {
+        "checkpoint": "weights/restoration/TSFormer.pth",
+        "runtime": "auto",
+        "amp": false,
+        "model": {
+          "attention_impl": "optimized",
+          "trusted_score_impl": "fast",
+          "sparse_topk": 16
+        }
+      },
+      "ShiftLUT": {
+        "lut_path": "weights/restoration/ShiftLUT"
+      },
+      "MPMF-Net": {
+        "checkpoint": "weights/restoration/MPMF-Net.pth",
+        "amp": false
+      },
+      "DCMGFormer": {
+        "checkpoint": "weights/restoration/DCMGFormer.pth",
+        "amp": false
+      },
+      "JarvisIR": {
+        "checkpoint": "weights/restoration/JarvisIR.pth",
+        "amp": false,
+        "parameters": {
+          "in_nc": 3,
+          "config": [4, 4, 4, 4, 4, 4, 4],
+          "dim": 64,
+          "input_resolution": 256
+        }
+      },
+      "GenDeg": {
+        "checkpoint": "weights/restoration/GenDeg.pth",
+        "amp": false,
+        "parameters": {
+          "img_channel": 3,
+          "width": 64,
+          "middle_blk_num": 12,
+          "enc_blk_nums": [2, 2, 4, 8],
+          "dec_blk_nums": [2, 2, 2, 2]
+        }
+      },
+      "StripeRes-DominantRemove": {
+        "parameters": {
+          "sigma": 9.0,
+          "fit_percentile": 95.0,
+          "saturation_threshold": 250.0,
+          "blend_start": 245.0,
+          "edge_rows": 5,
+          "transition_rows": 3,
+          "depression_strength": 1.0,
+          "maximum_luma_drop": 10.0,
+          "minimum_row_scale": 0.9
+        }
+      },
+      "StripeRes-ResidualRemove": {
+        "checkpoint": "weights/restoration/StripeRes-ResidualRemove.pth",
+        "amp": true
+      },
+      "StripeRes": {
+        "checkpoint": "weights/restoration/StripeRes-ResidualRemove.pth",
+        "amp": true,
+        "dominant_parameters": {
+          "sigma": 9.0,
+          "fit_percentile": 95.0,
+          "saturation_threshold": 250.0,
+          "blend_start": 245.0,
+          "edge_rows": 5,
+          "transition_rows": 3,
+          "depression_strength": 1.0,
+          "maximum_luma_drop": 10.0,
+          "minimum_row_scale": 0.9
+        }
+      }
+    }
+  },
+  "evaluation": {
+    "detectors": ["LaserGuard", "BlindedByBeam", "StripeDet"],
+    "restorers": [
+      "ADOM",
+      "Restormer",
+      "Uformer",
+      "NAFNet",
+      "AnyIR",
+      "TSFormer",
+      "ShiftLUT",
+      "MPMF-Net",
+      "DCMGFormer",
+      "JarvisIR",
+      "GenDeg",
+      "StripeRes"
+    ],
+    "max_images": 0
+  }
+}
